@@ -30,9 +30,8 @@ class allpostmeta {
 
 		public static function register_qm_output( array $output, QM_Collectors $collectors ) {
 			require_once plugin_dir_path(__FILE__) . 'qm-output.php';
-			if ( $collector = QM_Collectors::get( 'allpostmeta' ) ) {
+			if ( $collector = QM_Collectors::get( 'allpostmeta' ) )
 				$output['allpostmeta'] = new CSS_QM_Output_Html_allpostmeta( $collector );
-			}
 			return $output;
 		}
 
@@ -78,8 +77,9 @@ class allpostmeta {
 						$output = array();
 						$terms = get_the_terms($post->ID,$slug);
 						if (is_array($terms) && count($terms)) {
-							foreach ($terms as $term) $output[] = $term->name;
-							echo implode('", "',$output) . '"';
+							foreach ($terms as $term)
+								$output[] = '<a href="' . esc_url(get_edit_term_link($term->term_id,$slug)) . '">' . $term->name . '</a>';
+							echo implode(', ',$output);
 						}
 					 echo '</td>';
 				echo '</tr>';
@@ -125,6 +125,7 @@ if (class_exists('QM_Collector')) {
 		}
 
 	}
+
 }
 
 ?>

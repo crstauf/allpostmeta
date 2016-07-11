@@ -15,8 +15,9 @@ class CSS_QM_Output_Html_allpostmeta extends QM_Output_Html {
 
 		$meta = array();
 
-		foreach ($post as $key => $value)
-			$meta['Object'][$key] = $value;
+		if (is_admin())
+			foreach ($post as $key => $value)
+				$meta['Object'][$key] = $value;
 
 		if ($taxes = get_object_taxonomies(get_post_type($post),'objects')) {
 			foreach ($taxes as $slug => $tax) {
@@ -25,7 +26,7 @@ class CSS_QM_Output_Html_allpostmeta extends QM_Output_Html {
 					$meta['Taxonomies'][$slug] = '';
 					foreach ($terms as $term)
 						if ('' !== $slug)
-							$meta['Taxonomies'][$slug] .= '"' . $term->name . '", ';
+							$meta['Taxonomies'][$slug] .= '<a href="' . esc_url(get_edit_term_link($term->term_id,$slug)) . '">' . $term->name . '</a>, ';
 					if ('' !== $meta['Taxonomies'][$slug])
 						$meta['Taxonomies'][$slug] = substr($meta['Taxonomies'][$slug],0,strlen($meta['Taxonomies'][$slug]) - 2);
 				}
@@ -35,7 +36,10 @@ class CSS_QM_Output_Html_allpostmeta extends QM_Output_Html {
 		$custom = get_post_custom($post->ID);
 		ksort($custom);
 		foreach ($custom as $key => $value)
-			$meta['Custom Fields'][$key] = $value;
+			if (is_array($value) && 1 === count($value))
+				$meta['Custom Fields'][$key] = $value[0];
+			else
+				$meta['Custom Fields'][$key] = $value;
 
 			$imgs = new WP_Query(array(
 				'post_type' => 'attachment',
@@ -72,7 +76,7 @@ class CSS_QM_Output_Html_allpostmeta extends QM_Output_Html {
 			echo '<tr><td rowspan="' . count($meta[$name]) . '">' . $name . '</td>';
 
 			foreach ($group as $key => $value) {
-				$v = allpostmeta::value($value,('Attached Images' === $name ? false : true));
+				$v = allpostmeta::value($value,('Custom Fields' !== $name ? false : true));
 				if (true !== $first) echo '<tr>';
 					if ('' !== trim($key)) echo '<td>' . $key . '</td>';
 					echo '<td' . ('' === trim($key) ? ' colspan="3"' : '') . '><div style="overflow: auto; max-width: 100%; max-height: 300px;">' . (is_array($v) || is_object($v) ? '<pre>' . print_r($v,true) . '</pre>' : $v) . '</div></td>';
