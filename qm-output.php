@@ -21,7 +21,7 @@ class CSS_QM_Output_Html_allpostmeta extends QM_Output_Html {
 
 		$meta = array();
 
-		if (is_admin())
+		if (is_admin() && isset($post) && is_object($post))
 			foreach ($post as $key => $value)
 				$meta['Object'][$key] = $value;
 
