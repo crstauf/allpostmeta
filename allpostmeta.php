@@ -21,7 +21,7 @@ class allpostmeta {
 	function __construct() {
 		add_filter('qm/collectors',array(__CLASS__,'register_qm_collector'),20,2);
 		add_filter('qm/outputter/html',array(__CLASS__,'register_qm_output'),76,2);
-		add_action('plugins_loaded',array('allpostmeta','init'));
+		add_action('plugins_loaded',array(__CLASS__,'init'));
 	}
 
 	public static function init() {
